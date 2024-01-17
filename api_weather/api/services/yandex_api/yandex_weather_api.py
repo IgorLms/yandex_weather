@@ -1,6 +1,8 @@
 import os
 import requests
 import pandas as pd
+from rest_framework.exceptions import NotFound
+from rest_framework import status
 
 from api_weather.settings import BASE_DIR
 
@@ -25,7 +27,7 @@ class SearchCity(object):
         lat, lon = self.__get_coord_city()
 
         if not len(lat) or not len(lon):
-            raise ValueError('Данный город не существует')
+            raise NotFound(detail='Данный город не существует', code=status.HTTP_404_NOT_FOUND)
 
         return lat[0], lon[0]
 
@@ -54,6 +56,3 @@ class WeatherYandexApi(SearchCity):
         pressure_mm = request_json['fact']['pressure_mm']  # Давление
 
         return {'temp': temp, 'wind_speed': wind_speed, 'pressure_mm': pressure_mm}
-
-
-print(WeatherYandexApi('архангельск').get_request())
