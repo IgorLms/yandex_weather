@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+
+import telebot
+from django.conf import settings
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from dotenv import load_dotenv
 import os
 
@@ -28,8 +32,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1"]
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -42,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'rest_framework',
-    'debug_toolbar'
+    'debug_toolbar',
+    'bot.apps.BotConfig',
 
 ]
 
@@ -131,13 +135,22 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": os.environ.get('LOCATION_REDIS'),
+        "TIMEOUT": 60 * 30,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
 }
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 # Debug toolbar settings
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+# Telegram settings
+TELEGRAM_API_TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
+bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
+
+# Yandex-API settings
+YANDEX_API_KEY = os.environ.get('X-Yandex-API-Key')
